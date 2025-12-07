@@ -1,0 +1,94 @@
+{
+    automerge: true,
+    extends: [
+        'config:recommended',
+        ':dependencyDashboard',
+    ],
+    platformAutomerge: true,
+    automergeType: 'pr',
+    commitMessagePrefix: 'chore({{depName}}):',
+    commitMessageAction: 'bump',
+    commitMessageTopic: '{{depName}} version',
+    separateMajorMinor: false,
+    prHourlyLimit: 0,
+    prConcurrentLimit: 0,
+    branchConcurrentLimit: 0,
+    rebaseWhen: 'behind-base-branch',
+    enabledManagers: [
+        'custom.regex',
+    ],
+    customManagers: [
+        {
+            customType: 'regex',
+            managerFilePatterns: [
+                '/^packages/lua-language-server.yaml$/',
+            ],
+            matchStringsStrategy: 'combination',
+            matchStrings: [
+                'name:\\s(?<depName>.*?)\\n',
+                'version:\\s(?<currentValue>.*?)\\n',
+            ],
+            datasourceTemplate: 'github-releases',
+            versioningTemplate: 'semver',
+            packageNameTemplate: 'LuaLS/lua-language-server',
+        },
+        {
+            customType: 'regex',
+            managerFilePatterns: [
+                '/^packages/binutils.yaml$/',
+            ],
+            matchStringsStrategy: 'combination',
+            matchStrings: [
+                'name:\\s(?<depName>.*?)\\n',
+                'version:\\s(?<currentValue>.*?)\\n',
+            ],
+            datasourceTemplate: 'custom.html',
+            registryUrlTemplate: 'https://ftp.gnu.org/gnu/binutils/',
+            versioningTemplate: 'semver-coerced',
+            extractVersionTemplate: '^binutils-(?<version>.*?)\\.tar\\.gz$',
+        },
+        {
+            customType: 'regex',
+            managerFilePatterns: [
+                '/^packages/libunwind.yaml$/',
+            ],
+            matchStringsStrategy: 'combination',
+            matchStrings: [
+                'name:\\s(?<depName>.*?)\\n',
+                'version:\\s(?<currentValue>.*?)\\n',
+            ],
+            datasourceTemplate: 'github-releases',
+            versioningTemplate: 'semver',
+            packageNameTemplate: 'libunwind/libunwind',
+        },
+        {
+            customType: 'regex',
+            managerFilePatterns: [
+                '/^packages/xz.yaml$/',
+            ],
+            matchStringsStrategy: 'combination',
+            matchStrings: [
+                'name:\\s(?<depName>.*?)\\n',
+                'version:\\s(?<currentValue>.*?)\\n',
+            ],
+            datasourceTemplate: 'github-releases',
+            versioningTemplate: 'semver',
+            packageNameTemplate: 'tukaani-project/xz',
+        },
+    ],
+    customDatasources: {
+        html: {
+            format: 'html',
+        },
+    },
+    packageRules: [
+        {
+            matchDepNames: [
+                'lua-language-server',
+            ],
+            commitMessagePrefix: 'feat({{depName}}):',
+            commitMessageAction: 'update',
+            commitBody: 'Release-As: {{newVersion}}',
+        },
+    ],
+}

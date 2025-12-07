@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Lua Language Server
+GenericName=Language Server
+Icon=lua
+Exec=lua-language-server
+Terminal=true
+Categories=Utility;ConsoleOnly;

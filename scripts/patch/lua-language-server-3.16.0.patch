@@ -1,0 +1,30 @@
+diff --git a/scripts/writer.lua b/scripts/writer.lua
+index 3bae5f3..59a7321 100644
+--- a/scripts/writer.lua
++++ b/scripts/writer.lua
+@@ -302,6 +302,25 @@ local function generate(rule, attribute, name)
+     local cxxflags = {}
+     update_flags(flags, cflags, cxxflags, attribute, name, rule)
+ 
++    if globals.compiler == "gcc" then
++        local env_flags = os.getenv("FLAGS")
++        if env_flags then
++            flags[#flags+1] = env_flags
++        end
++        env_flags = os.getenv("CFLAGS")
++        if env_flags then
++            cflags[#cflags+1] = env_flags
++        end
++        env_flags = os.getenv("CXXFLAGS")
++        if env_flags then
++            cxxflags[#cxxflags+1] = env_flags
++        end
++        env_flags = os.getenv("LDFLAGS")
++        if env_flags then
++            ldflags[#ldflags+1] = env_flags
++        end
++    end
++
+     local str_flags = table.concat(flags, " ")
+     local str_cflags = table.concat(cflags, " ")
+     local str_cxxflags = table.concat(cxxflags, " ")
