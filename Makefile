@@ -4,8 +4,6 @@ appimage_dir := $(build_dir)/AppDir
 packages_dir := $(CURDIR)/packages
 lua_ls_ver := $(shell cat $(packages_dir)/lua-language-server.yaml | grep version | sed 's/.\+:\s//g')
 
-# Check if running inside Docker
-DOCKER := $(shell if [ -f /.dockerenv ]; then echo "true"; else echo "false"; fi)
 DOCKER_CMD := docker run -t \
 							--privileged \
 							-e TARGET_UID=$(shell id -u) \
@@ -41,13 +39,8 @@ $(appimage_dir)/usr/share/icons/hicolor/scalable/apps/lua.svg:
 	@cp $(CURDIR)/data/lua.svg $(appimage_dir)/usr/share/icons/hicolor/scalable/apps
 
 # Define the Docker command
-ifeq ($(DOCKER),true)
-$(appimage_dir)/usr/bin/lua-language-server:
-	$(MAKE) -C scripts appimage_dir=$(appimage_dir) build_dir=$(build_dir) packages_dir=$(packages_dir)
-else
 $(appimage_dir)/usr/bin/lua-language-server: docker_build
 	$(DOCKER_CMD) $(MAKE) -C scripts appimage_dir=$(appimage_dir) build_dir=$(build_dir) packages_dir=$(packages_dir) -j
-endif
 
 # build docker image
 docker_build:
