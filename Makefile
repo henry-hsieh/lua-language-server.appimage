@@ -13,22 +13,17 @@ DOCKER_CMD := docker run -t \
 							-w $(CURDIR) \
 							lua-language-server
 
-.PHONY: all clean docker_build test linuxdeploy_extract install
+.PHONY: all clean docker_build test install
 
 all: $(build_dir)/Lua_Language_Server-x86_64.AppImage
 
 # build appimage
 $(build_dir)/Lua_Language_Server-x86_64.AppImage: $(appimage_dir)/usr/bin/lua-language-server | $(build_dir)/linuxdeploy-x86_64.AppImage $(appimage_dir)/usr/share/applications/lua-language-server.desktop $(appimage_dir)/usr/share/icons/hicolor/scalable/apps/lua.svg
-	@cd $(build_dir); \
+	@$(DOCKER_CMD) \
+		bash -c " \
+		cd $(build_dir); \
 		LD_LIBRARY_PATH=$(appimage_dir)/usr/lib \
-		$(build_dir)/linuxdeploy-x86_64.AppImage --appdir $(appimage_dir) --output appimage --custom-apprun=$(CURDIR)/data/lua-language-server.bash || $(MAKE) linuxdeploy_extract -C $(CURDIR)
-
-linuxdeploy_extract: $(appimage_dir)/usr/bin/lua-language-server | $(build_dir)/linuxdeploy-x86_64.AppImage $(build_dir)/linuxdeploy
-	@cd $(build_dir)/linuxdeploy; \
-	../linuxdeploy-x86_64.AppImage --appimage-extract; \
-	cd $(build_dir); \
-	LD_LIBRARY_PATH=$(appimage_dir)/usr/lib \
-	$(build_dir)/linuxdeploy/squashfs-root/AppRun --appdir $(appimage_dir) --output appimage --custom-apprun=$(CURDIR)/data/lua-language-server.bash
+		./linuxdeploy-x86_64.AppImage --appdir $(appimage_dir) --output appimage --custom-apprun=$(CURDIR)/data/lua-language-server.bash"
 
 $(appimage_dir)/usr/share/applications/lua-language-server.desktop:
 	@mkdir -p $(appimage_dir)/usr/share/applications
